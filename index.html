@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Among Us Academy - Centro de Entrenamiento Pro</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        crewmate: {
+                            red: '#c51111',
+                            blue: '#132ed1',
+                            green: '#117f2d',
+                            pink: '#ed54ba',
+                            orange: '#ef7d0e',
+                            yellow: '#f5f538',
+                            black: '#3f474e',
+                            white: '#d6e0f0',
+                            purple: '#6b2fbb',
+                            brown: '#71491e',
+                            cyan: '#38fedc',
+                            lime: '#50f039'
+                        },
+                        space: {
+                            900: '#0b0f19',
+                            800: '#121829',
+                            700: '#1e293b',
+                            600: '#334155'
+                        }
+                    },
+                    fontFamily: {
+                        futuristic: ['Orbitron', 'sans-serif'],
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts: Orbitron & Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #07090e;
+            color: #f1f5f9;
+            overflow-x: hidden;
+        }
+
+        .font-orbitron {
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        /* Neon Glow Effects */
+        .neon-glow-red {
+            text-shadow: 0 0 10px rgba(197, 17, 17, 0.8), 0 0 20px rgba(197, 17, 17, 0.5);
+        }
+        .neon-glow-cyan {
+            text-shadow: 0 0 10px rgba(56, 254, 220, 0.8), 0 0 20px rgba(56, 254, 220, 0.5);
+        }
+        .box-neon-cyan {
+            box-shadow: 0 0 15px rgba(56, 254, 220, 0.25), inset 0 0 15px rgba(56, 254, 220, 0.1);
+        }
+        .box-neon-red {
+            box-shadow: 0 0 15px rgba(197, 17, 17, 0.3), inset 0 0 15px rgba(197, 17, 17, 0.1);
+        }
+
+        /* Glassmorphism Cards */
+        .glass-card {
+            background: rgba(18, 24, 41, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .glass-card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glass-card-hover:hover {
+            transform: translateY(-4px);
+            border-color: rgba(56, 254, 220, 0.4);
+            box-shadow: 0 10px 30px -10px rgba(56, 254, 220, 0.3);
+        }
+
+        /* Custom Starfield background animation */
+        @keyframes floatStars {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        .floating-anim {
+            animation: floatStars 4s ease-in-out infinite;
+        }
+
+        @keyframes pulseAlert {
+            0%, 100% { border-color: rgba(197, 17, 17, 0.6); box-shadow: 0 0 10px rgba(197, 17, 17, 0.4); }
+            50% { border-color: rgba(197, 17, 17, 1); box-shadow: 0 0 25px rgba(197, 17, 17, 0.8); }
+        }
+        .alert-active {
+            animation: pulseAlert 1.5s infinite;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b0f19;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #38fedc;
+        }
+    </style>
+</head>
+<body class="bg-space-900 text-slate-100 min-h-screen flex flex-col selection:bg-cyan-500 selection:text-black">
+
+    <header class="sticky top-0 z-50 glass-card border-b border-slate-800/80 px-4 lg:px-8 py-4 flex items-center justify-between">
+        <div class="flex items-center space-x-3 cursor-pointer" onclick="switchView('dashboard')">
+            <div class="w-10 h-10 rounded-full bg-crewmate-red flex items-center justify-center border-2 border-red-400 shadow-lg shadow-red-900/50">
+                <i class="fa-solid fa-user-astronaut text-white text-lg"></i>
+            </div>
+            <div>
+                <h1 class="font-orbitron font-black tracking-wider text-lg lg:text-xl text-cyan-400 neon-glow-cyan">AMONG US <span class="text-red-500">ACADEMY</span></h1>
+                <p class="text-xs text-slate-400 font-mono">CENTRO DE ENTRENAMIENTO TÁCTICO V2.6</p>
+            </div>
+        </div>
+
+        <nav class="hidden md:flex items-center space-x-6 font-medium text-sm">
+            <button onclick="switchView('dashboard')" class="nav-btn transition-colors hover:text-cyan-400 text-cyan-400 flex items-center gap-2"><i class="fa-solid fa-house"></i> Inicio</button>
+            <button onclick="switchView('memory')" class="nav-btn transition-colors hover:text-cyan-400 text-slate-300 flex items-center gap-2"><i class="fa-solid fa-brain"></i> Memoria & Cables</button>
+            <button onclick="switchView('deduction')" class="nav-btn transition-colors hover:text-cyan-400 text-slate-300 flex items-center gap-2"><i class="fa-solid fa-magnifying-glass"></i> Coartadas & Detección</button>
+            <button onclick="switchView('reflexes')" class="nav-btn transition-colors hover:text-cyan-400 text-slate-300 flex items-center gap-2"><i class="fa-solid fa-bolt"></i> Reflejos & Reactor</button>
+            <button onclick="switchView('tactics')" class="nav-btn transition-colors hover:text-cyan-400 text-slate-300 flex items-center gap-2"><i class="fa-solid fa-book-skull"></i> Guía & Discord</button>
+        </nav>
+
+        <div class="flex items-center space-x-3">
+            <div class="bg-space-800 border border-slate-700 px-3 py-1.5 rounded-xl flex items-center space-x-2 text-xs font-mono">
+                <i class="fa-solid fa-trophy text-yellow-400"></i>
+                <span id="global-score" class="font-bold text-yellow-400">0 XP</span>
+            </div>
+            <button class="md:hidden text-slate-300 hover:text-white p-2" onclick="toggleMobileMenu()">
+                <i class="fa-solid fa-bars text-xl"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Mobile Nav Drawer -->
+    <div id="mobile-menu" class="hidden fixed inset-0 z-40 bg-space-900/95 backdrop-blur-xl flex flex-col justify-center items-center space-y-6 text-lg font-orbitron">
+        <button onclick="switchView('dashboard'); toggleMobileMenu();" class="text-cyan-400"><i class="fa-solid fa-house mr-2"></i> Inicio</button>
+        <button onclick="switchView('memory'); toggleMobileMenu();" class="text-slate-300"><i class="fa-solid fa-brain mr-2"></i> Memoria & Cables</button>
+        <button onclick="switchView('deduction'); toggleMobileMenu();" class="text-slate-300"><i class="fa-solid fa-magnifying-glass mr-2"></i> Coartadas</button>
+        <button onclick="switchView('reflexes'); toggleMobileMenu();" class="text-slate-300"><i class="fa-solid fa-bolt mr-2"></i> Reflejos & Reactor</button>
+        <button onclick="switchView('tactics'); toggleMobileMenu();" class="text-slate-300"><i class="fa-solid fa-book-skull mr-2"></i> Guía & Discord</button>
+        <button onclick="toggleMobileMenu()" class="mt-8 px-6 py-2 bg-red-600 rounded-xl text-white text-sm"><i class="fa-solid fa-xmark mr-2"></i> Cerrar</button>
+    </div>
+
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 lg:p-6 pb-20">
+
+        <!-- VIEW 1: DASHBOARD -->
+        <section id="view-dashboard" class="space-y-8">
+            <!-- Hero Banner -->
+            <div class="relative rounded-3xl overflow-hidden glass-card p-6 lg:p-12 border border-cyan-500/30 box-neon-cyan">
+                <div class="absolute -right-10 -bottom-10 opacity-20 pointer-events-none hidden md:block">
+                    <i class="fa-solid fa-user-astronaut text-[240px] text-cyan-400 floating-anim"></i>
+                </div>
+                <div class="relative z-10 max-w-2xl space-y-4">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-mono font-bold">
+                        <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span> SISTEMA DE ENTRENAMIENTO ACTIVO
+                    </div>
+                    <h2 class="text-3xl lg:text-5xl font-extrabold font-orbitron tracking-tight">CONVIÉRTETE EN EL <span class="text-cyan-400 neon-glow-cyan">MEJOR TRIPULANTE</span> O IMPOSTOR</h2>
+                    <p class="text-slate-300 text-sm lg:text-base leading-relaxed">
+                        Mejora tus reflejos bajo presión, memoriza tareas de The Skeld a la velocidad de la luz, y domina el arte de la deducción social para ganar todas tus partidas en llamadas de Discord o en persona con tus amigos.
+                    </p>
+                    <div class="pt-2 flex flex-wrap gap-4">
+                        <button onclick="switchView('memory')" class="px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-space-900 font-orbitron font-bold rounded-xl transition-all shadow-lg shadow-cyan-500/30 flex items-center gap-2">
+                            <i class="fa-solid fa-play"></i> Empezar a Entrenar
+                        </button>
+                        <button onclick="switchView('tactics')" class="px-6 py-3 glass-card hover:bg-slate-800 font-orbitron text-slate-200 rounded-xl transition-all flex items-center gap-2">
+                            <i class="fa-solid fa-book"></i> Ver Guía Táctica
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Training Modules Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Card 1 -->
+                <div onclick="switchView('memory')" class="glass-card glass-card-hover rounded-2xl p-6 cursor-pointer border border-slate-800 flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 text-xl mb-4">
+                            <i class="fa-solid fa-brain"></i>
+                        </div>
+                        <h3 class="font-orbitron font-bold text-lg mb-2">Memoria & Cables</h3>
+                        <p class="text-slate-400 text-xs leading-relaxed">Simulador de Admin Swipe y conexión de cables por colores bajo presión temporal.</p>
+                    </div>
+                    <div class="mt-6 flex items-center justify-between text-xs text-cyan-400 font-mono font-semibold pt-4 border-t border-slate-800">
+                        <span>ENTRENAR MEMORIA</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div onclick="switchView('deduction')" class="glass-card glass-card-hover rounded-2xl p-6 cursor-pointer border border-slate-800 flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400 text-xl mb-4">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </div>
+                        <h3 class="font-orbitron font-bold text-lg mb-2">Coartadas & Mentiras</h3>
+                        <p class="text-slate-400 text-xs leading-relaxed">Analiza testimonios contradictorios en reuniones de emergencia y descubre al impostor.</p>
+                    </div>
+                    <div class="mt-6 flex items-center justify-between text-xs text-purple-400 font-mono font-semibold pt-4 border-t border-slate-800">
+                        <span>RESOLVER CASOS</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div onclick="switchView('reflexes')" class="glass-card glass-card-hover rounded-2xl p-6 cursor-pointer border border-slate-800 flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 rounded-xl bg-red-500/10 border border-red-500/30 flex items-center justify-center text-red-400 text-xl mb-4">
+                            <i class="fa-solid fa-bolt"></i>
+                        </div>
+                        <h3 class="font-orbitron font-bold text-lg mb-2">Reflejos & Reactor</h3>
+                        <p class="text-slate-400 text-xs leading-relaxed">Desactiva sabotajes de reactor y presiona botones de emergencia con máxima velocidad.</p>
+                    </div>
+                    <div class="mt-6 flex items-center justify-between text-xs text-red-400 font-mono font-semibold pt-4 border-t border-slate-800">
+                        <span>TEST DE REFLEJOS</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </div>
+                </div>
+
+                <!-- Card 4 -->
+                <div onclick="switchView('tactics')" class="glass-card glass-card-hover rounded-2xl p-6 cursor-pointer border border-slate-800 flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 rounded-xl bg-yellow-500/10 border border-yellow-500/30 flex items-center justify-center text-yellow-400 text-xl mb-4">
+                            <i class="fa-solid fa-microphone-lines"></i>
+                        </div>
+                        <h3 class="font-orbitron font-bold text-lg mb-2">Tácticas de Llamada</h3>
+                        <p class="text-slate-400 text-xs leading-relaxed">Aprende la estructura perfecta para dar información en Discord o en persona sin dudar.</p>
+                    </div>
+                    <div class="mt-6 flex items-center justify-between text-xs text-yellow-400 font-mono font-semibold pt-4 border-t border-slate-800">
+                        <span>LEER GUÍA PRO</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <section id="view-memory" class="hidden space-y-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 glass-card p-6 rounded-2xl border border-slate-800">
+                <div>
+                    <h2 class="text-2xl font-orbitron font-bold text-cyan-400 flex items-center gap-3">
+                        <i class="fa-solid fa-brain"></i> Módulo 1: Memoria & Tareas
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-1">Practica la secuencia de cables y el deslizamiento de tarjeta (Admin Swipe) bajo presión de tiempo.</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button onclick="startMemoryGame('wires')" class="px-4 py-2 bg-cyan-500/20 border border-cyan-500 text-cyan-300 font-orbitron text-xs rounded-xl hover:bg-cyan-500 hover:text-black transition-all">Desafío Cables</button>
+                    <button onclick="startMemoryGame('swipe')" class="px-4 py-2 bg-purple-500/20 border border-purple-500 text-purple-300 font-orbitron text-xs rounded-xl hover:bg-purple-500 hover:text-black transition-all">Admin Swipe</button>
+                </div>
+            </div>
+
+            <!-- Game Arena Card -->
+            <div class="glass-card p-6 lg:p-8 rounded-3xl border border-slate-800 text-center relative overflow-hidden min-h-[420px] flex flex-col justify-center items-center">
+                
+                <!-- Wires Game Container -->
+                <div id="wires-game-container" class="w-full max-w-xl space-y-6">
+                    <div class="flex justify-between items-center text-sm font-mono text-slate-400">
+                        <span id="wires-status">Conecta los cables del mismo color</span>
+                        <span>Nivel: <strong id="wires-level" class="text-cyan-400">1</strong></span>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-8 bg-space-800/80 p-6 rounded-2xl border border-slate-700 relative">
+                        <div id="left-wires" class="space-y-4 flex flex-col items-start">
+                            <!-- Left plugs generated via JS -->
+                        </div>
+                        <div id="right-wires" class="space-y-4 flex flex-col items-end">
+                            <!-- Right plugs generated via JS -->
+                        </div>
+                    </div>
+
+                    <div id="wires-msg" class="text-xs font-mono text-cyan-300 h-6"></div>
+                </div>
+
+                <!-- Admin Swipe Game Container (Hidden initially) -->
+                <div id="swipe-game-container" class="hidden w-full max-w-xl space-y-6">
+                    <div class="flex justify-between items-center text-sm font-mono text-slate-400">
+                        <span id="swipe-status">Desliza la tarjeta de identificación a velocidad correcta</span>
+                        <span>Intentos: <strong id="swipe-tries" class="text-purple-400">3</strong></span>
+                    </div>
+
+                    <div class="bg-space-800/90 p-8 rounded-2xl border border-slate-700 relative overflow-hidden">
+                        <div class="h-16 bg-slate-900 border-2 border-dashed border-slate-600 rounded-xl relative flex items-center px-4 overflow-hidden" id="swipe-track">
+                            <div id="wallet-card" class="absolute left-2 w-24 h-12 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-lg cursor-grab active:cursor-grabbing flex items-center justify-center font-orbitron text-xs text-white shadow-lg select-none transition-transform">
+                                ID CARD
+                            </div>
+                            <div class="w-2 h-full bg-cyan-400 absolute right-16 opacity-50"></div>
+                        </div>
+                        <p class="text-xs text-slate-400 mt-4">Arrastra la tarjeta de izquierda a derecha de forma fluida (ni muy rápido ni muy lento).</p>
+                    </div>
+
+                    <div id="swipe-msg" class="text-xs font-mono text-purple-300 h-6"></div>
+                </div>
+
+                <!-- Control Button -->
+                <div class="mt-6">
+                    <button id="memory-action-btn" onclick="initWiresGame()" class="px-6 py-2.5 bg-cyan-500 hover:bg-cyan-400 text-space-900 font-orbitron font-bold text-sm rounded-xl transition-all shadow-lg shadow-cyan-500/20">
+                        Reiniciar Desafío
+                    </button>
+                </div>
+            </div>
+        </section>
+
+
+        <section id="view-deduction" class="hidden space-y-6">
+            <div class="glass-card p-6 rounded-2xl border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-orbitron font-bold text-purple-400 flex items-center gap-3">
+                        <i class="fa-solid fa-magnifying-glass"></i> Módulo 2: Simulador de Coartadas & Detección
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-1">Lee los reportes de los tripulantes durante una reunión de emergencia y detecta quién miente.</p>
+                </div>
+                <div class="flex items-center gap-3 font-mono text-xs">
+                    <span class="bg-purple-500/20 text-purple-300 px-3 py-1.5 rounded-xl border border-purple-500/30">Pregunta <span id="deduction-current">1</span>/5</span>
+                </div>
+            </div>
+
+            <!-- Deduction Scenario Card -->
+            <div class="glass-card p-6 lg:p-8 rounded-3xl border border-slate-800 space-y-6 relative">
+                <!-- Situation Header -->
+                <div class="bg-space-800/90 p-4 rounded-2xl border border-slate-700 flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-xl bg-red-500/20 border border-red-500/50 flex items-center justify-center text-red-400 text-xl shrink-0">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-orbitron font-bold text-sm text-red-400">CUERPO REPORTADO EN <span id="crime-location">ELECTRICIDAD</span></h4>
+                        <p class="text-xs text-slate-300 mt-0.5" id="crime-description">Cafecito y luz cortada. Analiza los testimonios cuidadosamente.</p>
+                    </div>
+                </div>
+
+                <!-- Testimonies List -->
+                <div class="space-y-3" id="testimonies-list">
+                    <!-- Dynamic Testimonies inserted here -->
+                </div>
+
+                <!-- Question Prompt -->
+                <div class="pt-4 border-t border-slate-800">
+                    <h3 class="font-orbitron font-bold text-base text-slate-200 mb-4" id="deduction-question">¿Quién es el impostor más probable según las coartadas?</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4" id="deduction-options">
+                        <!-- Dynamic Options inserted here -->
+                    </div>
+                </div>
+
+                <!-- Feedback area -->
+                <div id="deduction-feedback" class="hidden p-4 rounded-2xl text-sm font-mono border"></div>
+            </div>
+        </section>
+
+
+        <section id="view-reflexes" class="hidden space-y-6">
+            <div class="glass-card p-6 rounded-2xl border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-orbitron font-bold text-red-400 flex items-center gap-3">
+                        <i class="fa-solid fa-bolt"></i> Módulo 3: Reflejos & Reactor Sabotaje
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-1">Desactiva el reactor o presiona los botones de emergencia antes de que se agote la cuenta atrás.</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button onclick="startReflexGame('reactor')" class="px-4 py-2 bg-red-500/20 border border-red-500 text-red-300 font-orbitron text-xs rounded-xl hover:bg-red-500 hover:text-black transition-all">Sabotaje Reactor</button>
+                    <button onclick="startReflexGame('emergency')" class="px-4 py-2 bg-yellow-500/20 border border-yellow-500 text-yellow-300 font-orbitron text-xs rounded-xl hover:bg-yellow-500 hover:text-black transition-all">Botón de Pánico</button>
+                </div>
+            </div>
+
+            <!-- Reflex Arena -->
+            <div id="reflex-arena" class="glass-card p-8 rounded-3xl border border-slate-800 text-center min-h-[420px] flex flex-col justify-center items-center relative overflow-hidden alert-active">
+                
+                <div id="reflex-timer-display" class="absolute top-4 right-6 font-orbitron text-xl font-bold text-red-500">
+                    <i class="fa-solid fa-stopwatch"></i> <span id="countdown-val">10.0</span>s
+                </div>
+
+                <div id="reflex-content" class="space-y-6 w-full max-w-md">
+                    <div class="w-20 h-20 mx-auto rounded-full bg-red-500/20 border-2 border-red-500 flex items-center justify-center text-red-400 text-3xl animate-pulse">
+                        <i class="fa-solid fa-radiation"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-orbitron font-bold text-xl text-red-400">¡SABOTAJE DE REACTOR DETECTADO!</h3>
+                        <p class="text-xs text-slate-300 mt-2">Introduce la secuencia numérica correcta o presiona los sensores simultáneamente para evitar la explosión.</p>
+                    </div>
+
+                    <div id="reactor-pad" class="grid grid-cols-3 gap-3 pt-2">
+                        <!-- Generated Buttons -->
+                    </div>
+                </div>
+
+                <!-- Game Over / Victory Overlay inside arena -->
+                <div id="reflex-result" class="hidden space-y-4">
+                    <h3 id="reflex-result-title" class="font-orbitron font-bold text-2xl">¡REACTOR SALVADO!</h3>
+                    <p id="reflex-result-desc" class="text-xs text-slate-300"></p>
+                    <button onclick="startReflexGame('reactor')" class="px-6 py-2.5 bg-red-600 hover:bg-red-500 text-white font-orbitron font-bold rounded-xl text-xs">Jugar de Nuevo</button>
+                </div>
+            </div>
+        </section>
+
+
+        <section id="view-tactics" class="hidden space-y-8">
+            <div class="glass-card p-6 lg:p-8 rounded-3xl border border-slate-800 space-y-6">
+                <div class="border-b border-slate-800 pb-4">
+                    <h2 class="text-2xl font-orbitron font-bold text-yellow-400 flex items-center gap-3">
+                        <i class="fa-solid fa-book-skull"></i> Guía Definitiva de Llamadas y Comunicación
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-1">Domina la jerga y la estructura de información para ganar en Discord o en juntadas con amigos.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Tip 1 -->
+                    <div class="bg-space-800/80 p-5 rounded-2xl border border-slate-700 space-y-3">
+                        <div class="flex items-center gap-3 text-cyan-400 font-orbitron font-bold text-sm">
+                            <i class="fa-solid fa-circle-1 text-lg"></i> Regla de Oro: Información Completa
+                        </div>
+                        <p class="text-xs text-slate-300 leading-relaxed">
+                            Nunca digas solo <span class="text-red-400 font-mono">"¡Es Rojo!"</span>. Da siempre los 3 datos clave: 
+                            <strong class="text-cyan-300">1. Quién (Color), 2. Dónde (Ubicación exacta), 3. Con quién estabas o qué viste.</strong> Ejemplo: <span class="text-slate-200 italic">"Vi a Rojo saliendo de Eléctrica hacia Cafetería hace 10 segundos, y el cuerpo está en Eléctrica"</span>.
+                        </p>
+                    </div>
+
+                    <!-- Tip 2 -->
+                    <div class="bg-space-800/80 p-5 rounded-2xl border border-slate-700 space-y-3">
+                        <div class="flex items-center gap-3 text-purple-400 font-orbitron font-bold text-sm">
+                            <i class="fa-solid fa-circle-2 text-lg"></i> Control de Silencios en Discord
+                        </div>
+                        <p class="text-xs text-slate-300 leading-relaxed">
+                            Estableced una regla clara: <strong class="text-purple-300">Silencio absoluto al morir</strong>. Si estás en llamada con amigos, los muertos no deben dar pistas ni gritar <span class="text-slate-400 italic">"¡Fue Cyan!"</span> hasta que se convoque la reunión, para evitar arruinar la experiencia de deducción.
+                        </p>
+                    </div>
+
+                    <!-- Tip 3 -->
+                    <div class="bg-space-800/80 p-5 rounded-2xl border border-slate-700 space-y-3">
+                        <div class="flex items-center gap-3 text-green-400 font-orbitron font-bold text-sm">
+                            <i class="fa-solid fa-circle-3 text-lg"></i> Coartadas Verificables
+                        </div>
+                        <p class="text-xs text-slate-300 leading-relaxed">
+                            Al inicio de la partida, muévete siempre en parejas o recuerda qué tareas visuales tienes (como Escudos o Asteroides). Si alguien te pregunta dónde estabas, menciona a tu testigo: <span class="text-slate-200 italic">"Estaba haciendo basura en Almacén con Verde"</span>.
+                        </p>
+                    </div>
+
+                    <!-- Tip 4 -->
+                    <div class="bg-space-800/80 p-5 rounded-2xl border border-slate-700 space-y-3">
+                        <div class="flex items-center gap-3 text-yellow-400 font-orbitron font-bold text-sm">
+                            <i class="fa-solid fa-circle-4 text-lg"></i> Psicología Inversa como Impostor
+                        </div>
+                        <p class="text-xs text-slate-300 leading-relaxed">
+                            Si juegas de impostor, no te calles demasiado ni acuses instantáneamente al primer color que hable. Deja que otros discutan, haz preguntas neutrales como <span class="text-slate-200 italic">"¿Alguien vio por dónde iba Amarillo?"</span> para parecer un tripulante colaborador.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="glass-card border-t border-slate-800 py-6 text-center text-xs text-slate-400 font-mono">
+        <p>Among Us Academy & Training Hub &bull; Creado para mejorar tu nivel táctico con amigos</p>
+    </footer>
+
+    <!-- Notification Toast Popup -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-32 opacity-0 transition-all duration-300 glass-card px-6 py-3 rounded-2xl border border-cyan-500 shadow-2xl flex items-center space-x-3">
+        <i id="toast-icon" class="fa-solid fa-circle-check text-cyan-400 text-lg"></i>
+        <span id="toast-text" class="text-xs font-orbitron font-bold text-slate-100">¡Acción completada con éxito!</span>
+    </div>
+
+    <script>
+        // Global User XP and State
+        let userXP = parseInt(localStorage.getItem('among_us_xp')) || 0;
+        updateXPDisplay();
+
+        function updateXPDisplay() {
+            document.getElementById('global-score').textContent = userXP + ' XP';
+            localStorage.setItem('among_us_xp', userXP);
+        }
+
+        function addXP(amount) {
+            userXP += amount;
+            updateXPDisplay();
+            showToast(`¡Ganaste +${amount} XP de entrenamiento!`, 'success');
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastText = document.getElementById('toast-text');
+            const toastIcon = document.getElementById('toast-icon');
+
+            toastText.textContent = message;
+            if(type === 'success') {
+                toastIcon.className = "fa-solid fa-circle-check text-cyan-400 text-lg";
+                toast.style.borderColor = "rgba(56, 254, 220, 0.5)";
+            } else {
+                toastIcon.className = "fa-solid fa-triangle-exclamation text-red-400 text-lg";
+                toast.style.borderColor = "rgba(197, 17, 17, 0.5)";
+            }
+
+            toast.classList.remove('translate-y-32', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-32', 'opacity-0');
+            }, 3000);
+        }
+
+        // Navigation Controller
+        function switchView(viewName) {
+            const views = ['dashboard', 'memory', 'deduction', 'reflexes', 'tactics'];
+            views.forEach(v => {
+                const el = document.getElementById(`view-${v}`);
+                if (el) el.classList.add('hidden');
+            });
+
+            const target = document.getElementById(`view-${viewName}`);
+            if (target) target.classList.remove('hidden');
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            // Initialize specific view minigames if needed
+            if(viewName === 'memory') {
+                initWiresGame();
+            } else if(viewName === 'deduction') {
+                loadDeductionScenario(0);
+            } else if(viewName === 'reflexes') {
+                startReflexGame('reactor');
+            }
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        /* ----------------------------------------------------
+           MINIGAME 1: WIRES & ADMIN SWIPE
+        ---------------------------------------------------- */
+        let wiresLevel = 1;
+        const colorsList = [
+            { name: 'Rojo', bg: 'bg-red-600', text: 'text-red-500' },
+            { name: 'Azul', bg: 'bg-blue-600', text: 'text-blue-500' },
+            { name: 'Rosa', bg: 'bg-pink-500', text: 'text-pink-400' },
+            { name: 'Amarillo', bg: 'bg-yellow-400', text: 'text-yellow-300' }
+        ];
+
+        function startMemoryGame(mode) {
+            const wiresContainer = document.getElementById('wires-game-container');
+            const swipeContainer = document.getElementById('swipe-game-container');
+            const btn = document.getElementById('memory-action-btn');
+
+            if(mode === 'wires') {
+                wiresContainer.classList.remove('hidden');
+                swipeContainer.classList.add('hidden');
+                btn.setAttribute('onclick', 'initWiresGame()');
+                initWiresGame();
+            } else {
+                wiresContainer.classList.add('hidden');
+                swipeContainer.classList.remove('hidden');
+                btn.setAttribute('onclick', 'initSwipeGame()');
+                initSwipeGame();
+            }
+        }
+
+        function initWiresGame() {
+            const leftContainer = document.getElementById('left-wires');
+            const rightContainer = document.getElementById('right-wires');
+            const msg = document.getElementById('wires-msg');
+            leftContainer.innerHTML = '';
+            rightContainer.innerHTML = '';
+            msg.textContent = '';
+            document.getElementById('wires-level').textContent = wiresLevel;
+
+            // Shuffle colors
+            let leftColors = [...colorsList].sort(() => Math.random() - 0.5);
+            let rightColors = [...colorsList].sort(() => Math.random() - 0.5);
+
+            let selectedLeft = null;
+
+            leftColors.forEach((c, index) => {
+                const btn = document.createElement('button');
+                btn.className = `w-full py-2 px-4 rounded-xl ${c.bg} text-white font-orbitron text-xs font-bold flex items-center justify-between border border-white/20 transition-transform active:scale-95`;
+                btn.innerHTML = `<span>${c.name}</span> <i class="fa-solid fa-plug"></i>`;
+                btn.dataset.color = c.name;
+                btn.onclick = () => {
+                    document.querySelectorAll('#left-wires button').forEach(b => b.classList.remove('ring-4', 'ring-white'));
+                    btn.classList.add('ring-4', 'ring-white');
+                    selectedLeft = c.name;
+                };
+                leftContainer.appendChild(btn);
+            });
+
+            let matchedCount = 0;
+            rightColors.forEach((c, index) => {
+                const btn = document.createElement('button');
+                btn.className = `w-full py-2 px-4 rounded-xl ${c.bg} text-white font-orbitron text-xs font-bold flex items-center justify-between border border-white/20 transition-transform active:scale-95`;
+                btn.innerHTML = `<i class="fa-solid fa-bolt"></i> <span>${c.name}</span>`;
+                btn.dataset.color = c.name;
+                btn.onclick = () => {
+                    if(!selectedLeft) {
+                        msg.textContent = "¡Primero selecciona un cable del lado izquierdo!";
+                        return;
+                    }
+                    if(selectedLeft === c.name) {
+                        btn.style.opacity = '0.3';
+                        btn.disabled = true;
+                        // Find and disable left
+                        document.querySelectorAll('#left-wires button').forEach(b => {
+                            if(b.dataset.color === c.name) {
+                                b.style.opacity = '0.3';
+                                b.disabled = true;
+                            }
+                        });
+                        selectedLeft = null;
+                        matchedCount++;
+                        msg.textContent = "¡Conexión correcta!";
+                        if(matchedCount === colorsList.length) {
+                            msg.textContent = "¡Felicidades! Tarea completada con éxito.";
+                            addXP(50);
+                            setTimeout(initWiresGame, 1500);
+                        }
+                    } else {
+                        msg.textContent = "¡Error! Los colores no coinciden.";
+                        showToast("¡Cable incorrecto!", "error");
+                        selectedLeft = null;
+                    }
+                };
+                rightContainer.appendChild(btn);
+            });
+        }
+
+        // Admin Swipe simulation
+        function initSwipeGame() {
+            const card = document.getElementById('wallet-card');
+            const track = document.getElementById('swipe-track');
+            const msg = document.getElementById('swipe-msg');
+            const triesEl = document.getElementById('swipe-tries');
+            
+            let tries = 3;
+            triesEl.textContent = tries;
+            msg.textContent = "Arrastra la tarjeta de izquierda a derecha...";
+
+            let isDragging = false;
+            let startX = 0;
+            let startTime = 0;
+
+            card.onmousedown = (e) => {
+                isDragging = true;
+                startX = e.clientX;
+                startTime = Date.now();
+            };
+
+            window.onmouseup = (e) => {
+                if(!isDragging) return;
+                isDragging = false;
+                let endTime = Date.now();
+                let duration = endTime - startTime;
+                
+                card.style.transform = `translateX(0px)`;
+
+                // Ideal swipe takes between 500ms and 1500ms
+                if(duration >= 400 && duration <= 1600) {
+                    msg.textContent = `¡Lectura aceptada! Tiempo: ${duration}ms`;
+                    addXP(40);
+                    showToast("¡Admin Swipe perfecto!", "success");
+                } else if(duration < 400) {
+                    tries--;
+                    triesEl.textContent = tries;
+                    msg.textContent = "¡Demasiado rápido! Intenta de nuevo.";
+                    showToast("¡Velocidad muy alta!", "error");
+                } else {
+                    tries--;
+                    triesEl.textContent = tries;
+                    msg.textContent = "¡Demasiado lento! Intenta de nuevo.";
+                    showToast("¡Velocidad muy baja!", "error");
+                }
+
+                if(tries <= 0) {
+                    msg.textContent = "¡Badge rechazado! Reiniciando intentos...";
+                    tries = 3;
+                    triesEl.textContent = tries;
+                }
+            };
+
+            card.onmousemove = (e) => {
+                if(!isDragging) return;
+                let diff = e.clientX - startX;
+                if(diff > 0 && diff < 240) {
+                    card.style.transform = `translateX(${diff}px)`;
+                }
+            };
+        }
+
+
+        /* ----------------------------------------------------
+           MINIGAME 2: SOCIAL DEDUCTION TRAINER
+        ---------------------------------------------------- */
+        const deductionScenarios = [
+            {
+                location: "Electricidad",
+                desc: "Se encontró el cuerpo de Azul junto al panel de cables. Las luces estaban cortadas.",
+                testimonies: [
+                    { color: "Rojo", avatar: "fa-user-astronaut text-red-500", text: "Yo estaba haciendo cables en Seguridad y vi a Amarillo pasar corriendo hacia Cafetería." },
+                    { color: "Amarillo", avatar: "fa-user-astronaut text-yellow-300", text: "Rojo miente descaradamente. Yo estaba en Cafetería con Rosa tomando café todo el tiempo." },
+                    { color: "Rosa", avatar: "fa-user-astronaut text-pink-400", text: "Es verdad, Amarillo estuvo conmigo en Cafetería. Pero vi a Negro saliendo de Eléctrica con una capucha." }
+                ],
+                question: "¿Quién es el impostor más probable según las coartadas cruzadas?",
+                options: [
+                    { name: "Rojo (Miente sobre la ubicación de Amarillo)", correct: true },
+                    { name: "Negro (Visto cerca del cadáver)", correct: false },
+                    { name: "Amarillo (Cómplice)", correct: false },
+                    { name: "Nadie, fue un accidente", correct: false }
+                ],
+                explanation: "¡Correcto! Rojo afirmó que vio a Amarillo corriendo hacia Cafetería, pero Amarillo y Rosa confirmaron que Amarillo estaba en Cafetería todo el tiempo. La coartada de Rojo se cae."
+            },
+            {
+                location: "Navegación",
+                desc: "Cuerpo reportado cerca de los escudos. Alguien saboteó las comunicaciones antes.",
+                testimonies: [
+                    { color: "Verde", avatar: "fa-user-astronaut text-green-500", text: "Yo estaba arreglando el reactor con Blanco cuando sonó la alarma." },
+                    { color: "Blanco", avatar: "fa-user-astronaut text-white", text: "Verde miente, yo estuve solo en Navegación haciendo la descarga de datos." },
+                    { color: "Orange", avatar: "fa-user-astronaut text-orange-500", text: "Yo vi a Verde salir de Navegación justo antes del reporte." }
+                ],
+                question: "¿Quién se contradice y miente en su testimonio?",
+                options: [
+                    { name: "Verde (Dice que estaba con Blanco, pero Blanco lo niega)", correct: true },
+                    { name: "Blanco (Quiso aislarse)", correct: false },
+                    { name: "Orange (Testigo falso)", correct: false },
+                    { name: "Todos son inocentes", correct: false }
+                ],
+                explanation: "¡Exacto! Verde aseguró que estaba acompañado por Blanco en el reactor, pero Blanco declaró categóricamente que estuvo solo en Navegación. Inconsistencia clara."
+            }
+        ];
+
+        let currentScenarioIndex = 0;
+
+        function loadDeductionScenario(index) {
+            if(index >= deductionScenarios.length) {
+                currentScenarioIndex = 0; // Loop or finish
+            }
+            const data = deductionScenarios[currentScenarioIndex];
+            document.getElementById('deduction-current').textContent = currentScenarioIndex + 1;
+            document.getElementById('crime-location').textContent = data.location.toUpperCase();
+            document.getElementById('crime-description').textContent = data.desc;
+            document.getElementById('deduction-question').textContent = data.question;
+
+            const testimoniesContainer = document.getElementById('testimonies-list');
+            testimoniesContainer.innerHTML = '';
+            data.testimonies.forEach(t => {
+                const div = document.createElement('div');
+                div.className = "bg-space-800/80 p-4 rounded-2xl border border-slate-700 flex items-start gap-3";
+                div.innerHTML = `
+                    <div class="w-10 h-10 rounded-xl bg-space-900 border border-slate-700 flex items-center justify-center text-lg shrink-0">
+                        <i class="fa-solid ${t.avatar}"></i>
+                    </div>
+                    <div>
+                        <h5 class="font-orbitron font-bold text-xs text-slate-300">${t.color}</h5>
+                        <p class="text-xs text-slate-400 mt-1">"${t.text}"</p>
+                    </div>
+                `;
+                testimoniesContainer.appendChild(div);
+            });
+
+            const optionsContainer = document.getElementById('deduction-options');
+            optionsContainer.innerHTML = '';
+            const feedback = document.getElementById('deduction-feedback');
+            feedback.classList.add('hidden');
+
+            data.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = "p-4 glass-card hover:bg-purple-900/20 border border-slate-700 rounded-2xl font-orbitron text-xs text-slate-200 transition-all text-left flex flex-col justify-between";
+                btn.innerHTML = `<span>${opt.name}</span> <span class="text-[10px] text-purple-400 mt-2 font-mono"><i class="fa-solid fa-fingerprint"></i> Seleccionar</span>`;
+                btn.onclick = () => {
+                    feedback.classList.remove('hidden');
+                    if(opt.correct) {
+                        feedback.className = "p-4 rounded-2xl text-sm font-mono border bg-green-950/40 border-green-500 text-green-300";
+                        feedback.innerHTML = `<i class="fa-solid fa-circle-check"></i> <strong>¡DEDUCCIÓN CORRECTA!</strong> ${data.explanation}`;
+                        addXP(60);
+                        setTimeout(() => {
+                            currentScenarioIndex++;
+                            loadDeductionScenario(currentScenarioIndex);
+                        }, 4000);
+                    } else {
+                        feedback.className = "p-4 rounded-2xl text-sm font-mono border bg-red-950/40 border-red-500 text-red-300";
+                        feedback.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> <strong>¡INCORRECTO!</strong> Analiza mejor las contradicciones en los testimonios.`;
+                        showToast("Deducción fallida", "error");
+                    }
+                };
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+
+        /* ----------------------------------------------------
+           MINIGAME 3: REFLEXES & REACTOR SABOTAGE
+        ---------------------------------------------------- */
+        let reflexTimer = null;
+        let timeLeft = 10.0;
+
+        function startReflexGame(mode) {
+            const content = document.getElementById('reflex-content');
+            const result = document.getElementById('reflex-result');
+            const timerVal = document.getElementById('countdown-val');
+            content.classList.remove('hidden');
+            result.classList.add('hidden');
+
+            clearInterval(reflexTimer);
+            timeLeft = mode === 'reactor' ? 10.0 : 5.0;
+            timerVal.textContent = timeLeft.toFixed(1);
+
+            const pad = document.getElementById('reactor-pad');
+            pad.innerHTML = '';
+
+            // Generate sequence of numbers 1 to 9 in random order
+            let numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9].sort(() => Math.random() - 0.5);
+            let expectedNext = 1;
+
+            numbers.forEach(num => {
+                const btn = document.createElement('button');
+                btn.className = "py-4 bg-space-800 hover:bg-red-600/30 border border-slate-700 rounded-xl font-orbitron font-bold text-lg text-slate-100 transition-all active:scale-95";
+                btn.textContent = num;
+                btn.onclick = () => {
+                    if(num === expectedNext) {
+                        btn.style.opacity = '0.3';
+                        btn.disabled = true;
+                        expectedNext++;
+                        if(expectedNext > 9) {
+                            clearInterval(reflexTimer);
+                            content.classList.add('hidden');
+                            result.classList.remove('hidden');
+                            document.getElementById('reflex-result-title').textContent = "¡SABOTAJE DESACTIVADO!";
+                            document.getElementById('reflex-result-desc').textContent = `¡Excelente reflejo bajo presión! Te sobraron ${timeLeft.toFixed(1)} segundos.`;
+                            addXP(50);
+                            showToast("¡Reactor salvado!", "success");
+                        }
+                    } else {
+                        showToast("¡Orden incorrecto!", "error");
+                        timeLeft = Math.max(0, timeLeft - 1.5); // Penalty
+                    }
+                };
+                pad.appendChild(btn);
+            });
+
+            reflexTimer = setInterval(() => {
+                timeLeft -= 0.1;
+                timerVal.textContent = Math.max(0, timeLeft).toFixed(1);
+                if(timeLeft <= 0) {
+                    clearInterval(reflexTimer);
+                    content.classList.add('hidden');
+                    result.classList.remove('hidden');
+                    document.getElementById('reflex-result-title').textContent = "¡LA NAVE HA EXPLOTADO!";
+                    document.getElementById('reflex-result-desc').textContent = "Se acabó el tiempo. No pudiste desactivar el reactor a tiempo.";
+                    showToast("¡Derrota por sabotaje!", "error");
+                }
+            }, 100);
+        }
+    </script>
+</body>
+</html>
